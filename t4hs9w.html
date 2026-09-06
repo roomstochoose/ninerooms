@@ -1,0 +1,22 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>seven</title><link rel="stylesheet" href="style.css"></head>
+<body><main>
+<h1>Three things were left behind.</h1>
+<p class="faint">ii &nbsp;&middot;&nbsp; iv &nbsp;&middot;&nbsp; vi</p>
+<p style="margin-top:1.6em"><input id="w" placeholder="___ ___ ___" autocomplete="off"></p>
+<p class="faint" id="msg" style="font-size:12px">&nbsp;</p>
+</main>
+<div class="tick">7 / 10</div>
+<script>
+const H="b2224c9ea5ed50707b112b51d82f5e6c2995c6536b0985a0872d2c77b6f5ad4b";
+async function check(v){
+  const n=v.toLowerCase().replace(/[^a-z0-9]/g,"");
+  const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(n));
+  const h=[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");
+  if(h===H){location.href="e6rc2m";}
+  else{document.getElementById("msg").textContent="no.";}
+}
+document.getElementById("w").addEventListener("keydown",e=>{if(e.key==="Enter")check(e.target.value);});
+</script>
+</body></html>

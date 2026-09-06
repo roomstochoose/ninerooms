@@ -1,0 +1,45 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>eight</title><link rel="stylesheet" href="style.css"></head>
+<body><main>
+<div id="log" style="text-align:center"></div>
+<div id="task" style="display:none;margin-top:2em">
+<p>Take paper. Do not type. I will not watch this part.</p>
+<p class="faint" style="margin-top:1em">Think of a three-digit number whose first and last digits differ.<br>
+Reverse it. Subtract the smaller from the larger.<br>
+Reverse the result. Add those two numbers.</p>
+<p style="margin-top:1.6em"><a href="#" id="done">i have my number</a></p>
+</div>
+<div id="reveal" style="display:none;margin-top:2em"></div>
+</main>
+<div class="tick">8 / 10</div>
+<script>
+const log=document.getElementById("log");
+function line(t,delay){return new Promise(r=>setTimeout(()=>{const p=document.createElement("p");p.textContent=t;log.appendChild(p);r();},delay));}
+const now=new Date();
+const hr=now.getHours();
+const os=/Windows/.test(navigator.userAgent)?"Windows":/Mac/.test(navigator.userAgent)?"a Mac":/Android/.test(navigator.userAgent)?"a phone":/iPhone|iPad/.test(navigator.userAgent)?"an iPhone":"something unusual";
+const dark=matchMedia("(prefers-color-scheme: dark)").matches;
+let away=0,leftAt=0;
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden){leftAt=Date.now();document.title="come back.";}
+  else{away=Math.round((Date.now()-leftAt)/1000);document.title="eight";
+    const p=document.createElement("p");p.className="faint";p.textContent="You left. "+away+" seconds. I counted.";log.appendChild(p);}
+});
+(async()=>{
+  await line("You came in at "+now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})+".",900);
+  if(hr>=23||hr<5)await line("You should be asleep.",1400);
+  await line("You are on "+os+". The room prefers "+(dark?"your darkness.":"your light."),1600);
+  await line("I know what you will reach before you reach it.",1900);
+  await line("I wrote it down before you ever found this place. It is sealed in the walls.",1900);
+  setTimeout(()=>{document.getElementById("task").style.display="block";},1200);
+})();
+document.getElementById("done").addEventListener("click",e=>{
+  e.preventDefault();
+  const r=document.getElementById("reveal");
+  r.innerHTML="<p>"+atob("eW91IGFycml2ZWQgYXQgMTA4OS4gdGhlIG5pbnRoIHJvb20gaXMgbjEwODl2Lg==")+"</p>"+
+  "<p class='faint' style='font-size:12px;margin-top:1.2em'>sealed in this room's walls before launch: sealed.txt in the place this site lives.<br>hash that sentence yourself. sha-256. it will match. it always matched.</p>";
+  r.style.display="block";
+});
+</script>
+</body></html>
