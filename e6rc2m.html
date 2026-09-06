@@ -110,8 +110,39 @@ document.getElementById("done").addEventListener("click",e=>{
   e.preventDefault();
   const r=document.getElementById("reveal");
   r.innerHTML="<p>"+atob("eW91IHN0b3BwZWQgb24gd2FpdGluZy4gZXZlcnlvbmUgc3RvcHMgb24gd2FpdGluZy4gdGhlIG5pbnRoIHJvb20gaXMgd2FpdGluZy4=")+"</p>"+
-  "<p class='faint' style='font-size:12px;margin-top:1.2em'>sealed in this room's walls before launch: sealed.txt in the place this site lives.<br>hash that sentence yourself. sha-256. it will match. it always matched.</p>";
+  "<p class='faint' style='font-size:12px;margin-top:1.2em'>sealed in this room's walls before launch: sealed.txt in the place this site lives.<br>hash that sentence yourself. sha-256. it will match. it always matched.</p>"+
+  "<p id='exits' style='margin-top:2.4em'><a href='#' id='leave'>leave</a> &nbsp;&nbsp;&nbsp; <a href='#' id='stay'>stay</a></p>";
   r.style.display="block";
+  document.getElementById("done").parentNode.style.display="none";
+  let stays=0;
+  document.getElementById("stay").addEventListener("click",ev=>{
+    ev.preventDefault(); const ex=document.getElementById("exits"); ex.style.visibility="hidden"; stays++;
+    setTimeout(()=>{ const p=document.createElement("p"); p.className="faint";
+      p.textContent=stays===1?"You stayed. Nobody stays.":stays===2?"Still here.":"There is nothing else in this room. Only the door.";
+      r.insertBefore(p,ex); ex.style.visibility="visible"; }, stays===1?20000:9000);
+  });
+  document.getElementById("leave").addEventListener("click",ev=>{ ev.preventDefault(); crash(); });
 });
+function crash(){
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const main=document.querySelector("main"); const tick=document.querySelector(".tick");
+  const glyphs="▒░█▓┼╬#%&@$?!/\\|<>~^";
+  const nodes=[...main.querySelectorAll("p")];
+  const orig=nodes.map(n=>n.textContent);
+  document.title="e̶i̶g̶h̶t̶";
+  let t=0;
+  const iv=setInterval(()=>{
+    t++;
+    nodes.forEach((n,i)=>{ n.textContent=orig[i].split("").map(c=>c!==" "&&Math.random()<Math.min(0.08*t,0.85)?glyphs[Math.floor(Math.random()*glyphs.length)]:c).join(""); });
+    if(!reduce){ main.style.transform="translate("+((Math.random()-0.5)*t*1.4)+"px,"+((Math.random()-0.5)*t*0.8)+"px)";
+      document.body.style.filter=(t===6||t===12||t===17)?"invert(1)":"none"; }
+    if(t===19){ clearInterval(iv); document.body.style.filter="none"; main.style.transform="none";
+      main.innerHTML=""; if(tick)tick.remove(); document.title="";
+      setTimeout(()=>{ document.title="error";
+        main.innerHTML="<h1>The room closed the connection.</h1><p class='faint'>Something on this page stopped responding.</p><p style='margin-top:2em'><a href='waiting'>reload</a></p>";
+      }, 2600);
+    }
+  }, reduce?60:140);
+}
 </script>
 </body></html>
