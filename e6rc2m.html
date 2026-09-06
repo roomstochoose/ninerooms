@@ -18,13 +18,26 @@ const log=document.getElementById("log");
 function typeLine(t,cls){return new Promise(res=>{
   const p=document.createElement("p"); if(cls)p.className=cls; log.appendChild(p);
   let i=0; const iv=setInterval(()=>{ p.textContent=t.slice(0,++i);
-    if(i>=t.length){clearInterval(iv);res();}},45);
+    if(i>=t.length){clearInterval(iv);res();}},48);
+});}
+function retypeLine(t1,keep,t2){return new Promise(res=>{
+  const p=document.createElement("p"); log.appendChild(p);
+  let i=0; const iv=setInterval(()=>{ p.textContent=t1.slice(0,++i);
+    if(i>=t1.length){clearInterval(iv);
+      setTimeout(()=>{ let j=t1.length;
+        const del=setInterval(()=>{ p.textContent=t1.slice(0,--j);
+          if(j<=keep){clearInterval(del);
+            let k=0; const add=setInterval(()=>{ p.textContent=t1.slice(0,keep)+t2.slice(0,++k);
+              if(k>=t2.length){clearInterval(add);res();}},55);
+          }},40);
+      },1200);
+    }},48);
 });}
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
-const now=new Date();
-const hr=now.getHours();
-const os=/Windows/.test(navigator.userAgent)?"Windows":/Mac/.test(navigator.userAgent)?"a Mac":/Android/.test(navigator.userAgent)?"a phone":/iPhone|iPad/.test(navigator.userAgent)?"an iPhone":"something unusual";
-const dark=matchMedia("(prefers-color-scheme: dark)").matches;
+const now=new Date(); const hr=now.getHours();
+let t0=null; try{t0=localStorage.nr_t0?+localStorage.nr_t0:null;}catch(e){}
+let visits=1; try{visits=(+(localStorage.nr_r8||0))+1; localStorage.nr_r8=visits;}catch(e){}
+const cameThruDoor=document.referrer.includes("t4hs9w");
 let leftAt=0;
 document.addEventListener("visibilitychange",()=>{
   if(document.hidden){leftAt=Date.now();document.title="come back.";}
@@ -32,19 +45,48 @@ document.addEventListener("visibilitychange",()=>{
     const p=document.createElement("p");p.className="faint";
     p.textContent="You left. "+away+" seconds. I counted.";log.appendChild(p);}
 });
+let idleFired=false, idleTimer=null, armed=false;
+function armIdle(){armed=true; resetIdle();}
+function resetIdle(){ if(!armed||idleFired)return; clearTimeout(idleTimer);
+  idleTimer=setTimeout(()=>{ if(idleFired)return; idleFired=true;
+    const p=document.createElement("p");p.className="faint";
+    p.textContent="Still there. I can hear you reading.";log.appendChild(p);
+  },26000);}
+["mousemove","scroll","keydown","touchstart"].forEach(ev=>addEventListener(ev,resetIdle,{passive:true}));
 (async()=>{
-  await pause(2500);
-  await typeLine("Oh.");
-  await pause(1800);
-  await typeLine("You made it this far.");
+  if(visits>1){
+    await pause(1500);
+    await typeLine("Again.");
+    await pause(1800);
+    await typeLine("The task hasn't changed. Neither has the answer.","faint");
+    await pause(1200);
+    document.getElementById("task").style.display="block";
+    armIdle(); return;
+  }
   await pause(2600);
-  await typeLine("You came in at "+now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+".");
-  if(hr>=23||hr<5){await pause(1600); await typeLine("You should be asleep.","faint");}
-  await pause(2200);
-  await typeLine("You are on "+os+". The room prefers "+(dark?"your darkness.":"your light."));
-  await pause(3000);
+  await typeLine("Oh.");
+  await pause(2000);
+  await typeLine("You made it this far.");
+  await pause(2400);
+  if(t0 && Date.now()-t0 > 2*60*1000){
+    const mins=Math.round((Date.now()-t0)/60000);
+    await typeLine("You opened the first door "+mins+" minutes ago.");
+    await pause(1400);
+    await typeLine("I was already here.","faint");
+    await pause(2400);
+  } else {
+    await typeLine("It is "+now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+" where you are.");
+    if(hr>=23||hr<5){await pause(1500); await typeLine("You should be asleep.","faint");}
+    await pause(2400);
+  }
+  if(!cameThruDoor){
+    await typeLine("Did you come through the seventh door? I didn't hear it open.","faint");
+    await pause(2600);
+  }
+  await retypeLine("You are safe here.",8,"still here.");
+  await pause(2800);
   await typeLine("The other rooms asked you questions.");
-  await pause(1400);
+  await pause(1500);
   await typeLine("I won't.");
   await pause(2600);
   await typeLine("I already know what you will reach before you reach it.");
@@ -52,6 +94,7 @@ document.addEventListener("visibilitychange",()=>{
   await typeLine("I wrote it into the walls before you ever found this place.","faint");
   await pause(3200);
   document.getElementById("task").style.display="block";
+  armIdle();
 })();
 document.getElementById("done").addEventListener("click",e=>{
   e.preventDefault();
