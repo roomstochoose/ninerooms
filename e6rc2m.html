@@ -126,23 +126,26 @@ document.getElementById("done").addEventListener("click",e=>{
 function crash(){
   const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
   const main=document.querySelector("main"); const tick=document.querySelector(".tick");
-  const glyphs="▒░█▓┼╬#%&@$?!/\\|<>~^";
-  const nodes=[...main.querySelectorAll("p")];
-  const orig=nodes.map(n=>n.textContent);
-  document.title="e̶i̶g̶h̶t̶";
-  let t=0;
-  const iv=setInterval(()=>{
-    t++;
-    nodes.forEach((n,i)=>{ n.textContent=orig[i].split("").map(c=>c!==" "&&Math.random()<Math.min(0.08*t,0.85)?glyphs[Math.floor(Math.random()*glyphs.length)]:c).join(""); });
-    if(!reduce){ main.style.transform="translate("+((Math.random()-0.5)*t*1.4)+"px,"+((Math.random()-0.5)*t*0.8)+"px)";
-      document.body.style.filter=(t===6||t===12||t===17)?"invert(1)":"none"; }
-    if(t===19){ clearInterval(iv); document.body.style.filter="none"; main.style.transform="none";
-      main.innerHTML=""; if(tick)tick.remove(); document.title="";
+  const ov=document.createElement("div");
+  ov.style.cssText="position:fixed;inset:0;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;font-size:15px;letter-spacing:.06em;padding:2em;z-index:9;display:none";
+  document.body.appendChild(ov);
+  const msgs=["it was never a door.","you counted wrong.","no. you counted right.","every word you passed is still here.",
+              "i kept them.","there was no first line.","you did not choose it.","nobody chooses it.",
+              "the ninth room is not a room.","stop reading.","you can't.","i know."];
+  const frames=[];
+  msgs.forEach((m,i)=>{ frames.push({on:true,text:m,dur:reduce?1400:(i<4?700:i<8?520:380)}); frames.push({on:false,dur:reduce?500:(i<8?260:140)}); });
+  document.title="";
+  let k=0;
+  function next(){
+    if(k>=frames.length){ ov.style.display="none"; main.innerHTML=""; if(tick)tick.remove();
       setTimeout(()=>{ document.title="error";
         main.innerHTML="<h1>The room closed the connection.</h1><p class='faint'>Something on this page stopped responding.</p><p style='margin-top:2em'><a href='waiting'>reload</a></p>";
-      }, 2600);
-    }
-  }, reduce?60:140);
+      },2600); return; }
+    const f=frames[k++];
+    if(f.on){ ov.textContent=f.text; ov.style.display="flex"; } else { ov.style.display="none"; }
+    setTimeout(next,f.dur);
+  }
+  main.style.visibility="hidden"; setTimeout(next,900);
 }
 </script>
 </body></html>
