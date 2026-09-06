@@ -2,6 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>eight</title><link rel="stylesheet" href="style.css"></head>
 <body><main>
+<div id="seal" class="faint" style="font-size:10px;letter-spacing:.04em;opacity:.55;margin-bottom:2.4em;word-break:break-all">aa95d55d4bb414ae4592386fd080b7c4abb6d296870630563266d26288534af1</div>
 <div id="log" style="text-align:center"></div>
 <div id="task" style="display:none;margin-top:2em">
 <div id="poem" class="faint" style="line-height:2.1"></div>
@@ -102,9 +103,30 @@ function resetIdle(){ if(!armed||idleFired)return; clearTimeout(idleTimer);
 document.getElementById("done").addEventListener("click",e=>{
   e.preventDefault();
   const r=document.getElementById("reveal");
-  r.innerHTML="<p>"+atob("eW91IHN0b3BwZWQgb24gd2FpdGluZy4gZXZlcnlvbmUgc3RvcHMgb24gd2FpdGluZy4gdGhlIG5pbnRoIHJvb20gaXMgd2FpdGluZy4=")+"</p>"+
-  "<p class='faint' style='font-size:12px;margin-top:1.2em'>sealed in this room's walls before launch: sealed.txt in the place this site lives.<br>hash that sentence yourself. sha-256. it will match. it always matched.</p>"+
-  "<p id='exits' style='margin-top:2.4em'><a href='#' id='leave' style='color:#9c2f2f'>leave</a> &nbsp;&nbsp;&nbsp; <a href='#' id='stay' style='color:#2f7a45'>stay</a></p>";
+  const sentence=atob("eW91IHN0b3BwZWQgb24gd2FpdGluZy4gZXZlcnlvbmUgc3RvcHMgb24gd2FpdGluZy4gdGhlIG5pbnRoIHJvb20gaXMgd2FpdGluZy4=");
+  r.innerHTML="<p id='rs'></p><p class='faint' id='rp' style='font-size:12px;margin-top:1.4em;min-height:3.6em;word-break:break-all'></p>"+
+  "<p id='exits' style='margin-top:2.4em;visibility:hidden'><a href='#' id='leave' style='color:#9c2f2f'>leave</a> &nbsp;&nbsp;&nbsp; <a href='#' id='stay' style='color:#2f7a45'>stay</a></p>";
+  (async()=>{
+    const rs=document.getElementById("rs"), rp=document.getElementById("rp");
+    await new Promise(res=>{let i=0;const iv=setInterval(()=>{rs.textContent=sentence.slice(0,++i);if(i>=sentence.length){clearInterval(iv);res();}},60);});
+    await pause(2200);
+    rp.textContent="You walked past this sentence's fingerprint in the first room. It is above you now."; 
+    await pause(3000);
+    const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(sentence));
+    const hex=[...new Uint8Array(buf)].map(x=>x.toString(16).padStart(2,"0")).join("");
+    const hexchars="0123456789abcdef"; let shown="";
+    rp.textContent="";
+    for(let i=0;i<hex.length;i++){
+      for(let j=0;j<3;j++){ rp.textContent=shown+hexchars[Math.floor(Math.random()*16)]; await pause(9); }
+      shown+=hex[i]; rp.textContent=shown;
+    }
+    await pause(1200);
+    const seal=document.getElementById("seal");
+    if(hex===seal.textContent.trim()){ seal.style.opacity="1"; seal.style.color="#1a1a1a"; rp.style.color="#1a1a1a";
+      await pause(1600); rp.textContent=hex+"\n\nsha-256. check it yourself. it was written before you came."; }
+    await pause(2600);
+    document.getElementById("exits").style.visibility="visible";
+  })();
   r.style.display="block";
   document.getElementById("done").parentNode.style.display="none";
   let stays=0;
