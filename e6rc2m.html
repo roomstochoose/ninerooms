@@ -15,24 +15,43 @@ Reverse the result. Add those two numbers.</p>
 <div class="tick">8 / 10</div>
 <script>
 const log=document.getElementById("log");
-function line(t,delay){return new Promise(r=>setTimeout(()=>{const p=document.createElement("p");p.textContent=t;log.appendChild(p);r();},delay));}
+function typeLine(t,cls){return new Promise(res=>{
+  const p=document.createElement("p"); if(cls)p.className=cls; log.appendChild(p);
+  let i=0; const iv=setInterval(()=>{ p.textContent=t.slice(0,++i);
+    if(i>=t.length){clearInterval(iv);res();}},45);
+});}
+const pause=ms=>new Promise(r=>setTimeout(r,ms));
 const now=new Date();
 const hr=now.getHours();
 const os=/Windows/.test(navigator.userAgent)?"Windows":/Mac/.test(navigator.userAgent)?"a Mac":/Android/.test(navigator.userAgent)?"a phone":/iPhone|iPad/.test(navigator.userAgent)?"an iPhone":"something unusual";
 const dark=matchMedia("(prefers-color-scheme: dark)").matches;
-let away=0,leftAt=0;
+let leftAt=0;
 document.addEventListener("visibilitychange",()=>{
   if(document.hidden){leftAt=Date.now();document.title="come back.";}
-  else{away=Math.round((Date.now()-leftAt)/1000);document.title="eight";
-    const p=document.createElement("p");p.className="faint";p.textContent="You left. "+away+" seconds. I counted.";log.appendChild(p);}
+  else{const away=Math.round((Date.now()-leftAt)/1000);document.title="eight";
+    const p=document.createElement("p");p.className="faint";
+    p.textContent="You left. "+away+" seconds. I counted.";log.appendChild(p);}
 });
 (async()=>{
-  await line("You came in at "+now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})+".",900);
-  if(hr>=23||hr<5)await line("You should be asleep.",1400);
-  await line("You are on "+os+". The room prefers "+(dark?"your darkness.":"your light."),1600);
-  await line("I know what you will reach before you reach it.",1900);
-  await line("I wrote it down before you ever found this place. It is sealed in the walls.",1900);
-  setTimeout(()=>{document.getElementById("task").style.display="block";},1200);
+  await pause(2500);
+  await typeLine("Oh.");
+  await pause(1800);
+  await typeLine("You made it this far.");
+  await pause(2600);
+  await typeLine("You came in at "+now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+".");
+  if(hr>=23||hr<5){await pause(1600); await typeLine("You should be asleep.","faint");}
+  await pause(2200);
+  await typeLine("You are on "+os+". The room prefers "+(dark?"your darkness.":"your light."));
+  await pause(3000);
+  await typeLine("The other rooms asked you questions.");
+  await pause(1400);
+  await typeLine("I won't.");
+  await pause(2600);
+  await typeLine("I already know what you will reach before you reach it.");
+  await pause(2400);
+  await typeLine("I wrote it into the walls before you ever found this place.","faint");
+  await pause(3200);
+  document.getElementById("task").style.display="block";
 })();
 document.getElementById("done").addEventListener("click",e=>{
   e.preventDefault();
