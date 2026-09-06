@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>seven</title><link rel="stylesheet" href="style.css"></head>
+<title>seven</title><link rel="stylesheet" href="style.css"><script src="log.js"></script></head>
 <body><main>
 <h1>Three things were left behind.</h1>
 <p class="faint">ii &nbsp;&middot;&nbsp; iv &nbsp;&middot;&nbsp; vi</p>
@@ -10,7 +10,10 @@
 <div class="tick">7 / 10</div>
 <script>
 const H="b2224c9ea5ed50707b112b51d82f5e6c2995c6536b0985a0872d2c77b6f5ad4b";
+const _load=Date.now();
 async function check(v){
+  try{ if(!localStorage.nr_wall_first)localStorage.nr_wall_first=Math.round((Date.now()-_load)/1000);
+       const a=JSON.parse(localStorage.nr_wall_att||"[]"); if(a.length<12)a.push(v.trim().slice(0,40)); localStorage.nr_wall_att=JSON.stringify(a);}catch(e){}
   const n=v.toLowerCase().replace(/[^a-z0-9]/g,"");
   const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(n));
   const h=[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");
