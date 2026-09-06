@@ -61,6 +61,30 @@ function resetIdle(){ if(!armed||idleFired)return; clearTimeout(idleTimer);
     p.textContent="Still there. I can hear you reading.";log.appendChild(p);
   },26000);}
 ["mousemove","scroll","keydown","touchstart"].forEach(ev=>addEventListener(ev,resetIdle,{passive:true}));
+// --- reactive observations: each fires once, only in response to the player ---
+const said={};
+function observe(key,text,delay){ if(said[key])return; said[key]=1;
+  setTimeout(()=>{const p=document.createElement("p");p.className="faint";
+    p.textContent=text;log.appendChild(p);},delay||900);}
+document.addEventListener("copy",()=>observe("copy","Taking it with you won't help."));
+document.addEventListener("selectionchange",()=>{
+  const sel=(getSelection()||"").toString();
+  if(sel.trim().length>3)observe("sel","That part matters to you. Noted.",1400);});
+addEventListener("beforeprint",()=>observe("print","I will not survive on paper. Neither will you find me there."));
+addEventListener("offline",()=>observe("off","You cannot unplug me. I was never in the wire."));
+setTimeout(()=>{
+  if(screen.width-outerWidth>140||screen.height-outerHeight>180)
+    observe("win","Your window is small. What else do you have open?");
+},9000);
+let devBase=outerHeight-innerHeight;
+setInterval(()=>{ if((outerHeight-innerHeight)-devBase>160||(outerWidth-innerWidth)>160)
+  observe("dev","Looking inside me? I am not in the code.");},1500);
+if(navigator.getBattery){navigator.getBattery().then(b=>{
+  setTimeout(()=>{ const pct=Math.round(b.level*100);
+    if(b.charging)observe("bat","Your battery reads "+pct+" percent. Plugged in. Good. Stay.");
+    else if(pct<25)observe("bat","Your battery reads "+pct+" percent. We don't have long.");
+    else observe("bat","Your battery reads "+pct+" percent. Enough time.");},14000);});}
+
 (async()=>{
   if(visits>1){
     await pause(1500);
