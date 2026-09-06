@@ -67,9 +67,8 @@ function gather(){
 let stays=0;
 document.getElementById("stay").addEventListener("click",ev=>{
   ev.preventDefault(); const ex=document.getElementById("exits"); ex.style.visibility="hidden"; stays++;
-  setTimeout(()=>{ const p=document.createElement("p"); p.className="faint";
-    p.textContent=stays===1?"You stayed. Nobody stays.":stays===2?"Still here.":"There is nothing else in this room. Only the door.";
-    log.appendChild(p); ex.style.visibility="visible"; }, stays===1?20000:9000);
+  setTimeout(async()=>{ await typeLine(stays===1?"You stayed. Nobody stays.":stays===2?"Still here.":"There is nothing else in this room. Only the door.","faint");
+    await pause(1200); ex.style.visibility="visible"; }, stays===1?20000:9000);
 });
 document.getElementById("leave").addEventListener("click",ev=>{ ev.preventDefault(); crash(); });
 function crash(){
