@@ -31,7 +31,10 @@ function gather(){
     const now=Date.now();
     const t0=+localStorage.nr_t0||0;
     const visits={}; order.forEach(c=>{const v=localStorage.getItem("nr_v_"+c); visits[c]=v?v.split(",").map(Number):[];});
-    if(t0){ any=true; L.push("You opened the first door at "+fmt(t0)+". It is "+fmt(now)+"."); }
+    if(t0){ any=true; const el=now-t0, d=Math.floor(el/86400000), h=Math.floor(el/3600000);
+      L.push(d>=1?"You opened the first door "+d+(d===1?" day":" days")+" ago. You came back.":
+             h>=1?"You have been in the rooms "+h+(h===1?" hour":" hours")+" now.":
+             "You opened the first door at "+fmt(t0)+". It is "+fmt(now)+"."); }
     // longest room (first visit to first visit of next)
     let longest=null;
     for(let i=0;i<order.length-1;i++){ const a=visits[order[i]][0], b=visits[order[i+1]][0];
@@ -40,12 +43,6 @@ function gather(){
     // most revisited
     let rev=null; order.forEach(c=>{ if(visits[c].length>=3&&(!rev||visits[c].length>rev.n))rev={n:visits[c].length,c}; });
     if(rev){ any=true; L.push("You went back to room "+names[rev.c]+" "+(rev.n-1)+" times."); }
-    // wall attempts
-    const att=JSON.parse(localStorage.nr_wall_att||"[]");
-    const wrong=att.filter(a=>a.toLowerCase().replace(/[^a-z0-9]/g,"")!=="lanternmirrorcoldcorridor");
-    if(wrong.length){ any=true;
-      L.push(wrong.length===1?"At the wall you typed \u201c"+wrong[0]+"\u201d first.":
-        "At the wall you typed \u201c"+wrong[0]+"\u201d. Then \u201c"+wrong[wrong.length-1]+"\u201d. Then you had it."); }
     const hes=+localStorage.nr_wall_first||0;
     if(hes>=20){ any=true; L.push("You stood at the wall "+hes+" seconds before you tried anything."); }
     // skipped a room entirely
