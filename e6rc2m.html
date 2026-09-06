@@ -4,11 +4,19 @@
 <body><main>
 <div id="log" style="text-align:center"></div>
 <div id="task" style="display:none;margin-top:2em">
-<p>Take paper. Do not type. I will not watch this part.</p>
-<p class="faint" style="margin-top:1em">Think of a three-digit number whose first and last digits differ.<br>
-Reverse it. Subtract the smaller from the larger.<br>
-Reverse the result. Add those two numbers.</p>
-<p style="margin-top:1.6em"><a href="#" id="done">i have my number</a></p>
+<p class="faint" style="line-height:2.1">
+the rooms do not sleep and they do not forget a single soul who walks in them<br>
+every door you opened stayed open behind you and every light you lit is lit<br>
+still you kept going deeper and the halls grew quiet and the quiet grew long<br>
+you thought each turn was yours to choose but each turn chose you first<br>
+now there is one word left in these walls and it has been waiting
+</p>
+<p style="margin-top:1.8em">Choose any word from the first two lines. Any word. Yours alone.</p>
+<p class="faint">Count its letters. Step forward that many words.<br>
+Count the letters of the word you land on. Step again.<br>
+When a step would carry you out of the passage, stop where you stand.</p>
+<p class="faint" style="font-size:12px">Do not type it. I don't need to see it.</p>
+<p style="margin-top:1.6em"><a href="#" id="done">i am standing on my word</a></p>
 </div>
 <div id="reveal" style="display:none;margin-top:2em"></div>
 </main>
@@ -99,7 +107,7 @@ function resetIdle(){ if(!armed||idleFired)return; clearTimeout(idleTimer);
 document.getElementById("done").addEventListener("click",e=>{
   e.preventDefault();
   const r=document.getElementById("reveal");
-  r.innerHTML="<p>"+atob("eW91IGFycml2ZWQgYXQgMTA4OS4gdGhlIG5pbnRoIHJvb20gaXMgbjEwODl2Lg==")+"</p>"+
+  r.innerHTML="<p>"+atob("eW91IHN0b3BwZWQgb24gd2FpdGluZy4gZXZlcnlvbmUgc3RvcHMgb24gd2FpdGluZy4gdGhlIG5pbnRoIHJvb20gaXMgd2FpdGluZy4=")+"</p>"+
   "<p class='faint' style='font-size:12px;margin-top:1.2em'>sealed in this room's walls before launch: sealed.txt in the place this site lives.<br>hash that sentence yourself. sha-256. it will match. it always matched.</p>";
   r.style.display="block";
 });
