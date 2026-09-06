@@ -1,0 +1,17 @@
+:root{--ink:#1a1a1a;--faint:#9a9a9a;--line:#e4e4e4}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{background:#fff;color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+display:flex;align-items:center;justify-content:center;text-align:center;
+font-size:15px;line-height:1.7;letter-spacing:.02em}
+main{max-width:34em;padding:2em}
+h1{font-size:15px;font-weight:400}
+p{margin-top:.6em}
+a{color:var(--ink)}
+.faint{color:var(--faint)}
+.tick{position:fixed;bottom:1.2em;right:1.5em;color:var(--faint);font-size:12px}
+input{font:inherit;border:none;border-bottom:1px solid var(--line);padding:.3em .1em;
+text-align:center;width:16em;outline:none;background:none}
+input:focus{border-color:var(--ink)}
+audio{margin-top:1.4em;width:100%}
+img{max-width:100%;height:auto}
