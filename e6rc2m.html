@@ -117,23 +117,64 @@ document.getElementById("done").addEventListener("click",e=>{
 function crash(){
   const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
   const main=document.querySelector("main"); const tick=document.querySelector(".tick");
-  const ov=document.createElement("div");
-  ov.style.cssText="position:fixed;inset:0;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;font-size:15px;letter-spacing:.06em;padding:2em;z-index:9;display:none";
+  // glitch styles
+  const st=document.createElement("style");
+  st.textContent=`
+  #gov{position:fixed;inset:0;background:#000;z-index:9;display:none;overflow:hidden}
+  #gov .l{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;
+    color:#fff;font-size:17px;letter-spacing:.08em;padding:2em;white-space:pre-wrap}
+  #gov .r{color:#f0f;mix-blend-mode:screen}
+  #gov .c{color:#0ff;mix-blend-mode:screen}
+  #gov .scan{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 3px);pointer-events:none}
+  #gov .bar{position:absolute;left:0;right:0;background:#fff;opacity:.9;mix-blend-mode:difference}
+  .tear{clip-path:inset(var(--t) 0 var(--b) 0);transform:translateX(var(--x))}
+  `;
+  document.head.appendChild(st);
+  const ov=document.createElement("div"); ov.id="gov";
+  ov.innerHTML='<div class="l r" id="gr"></div><div class="l c" id="gc"></div><div class="l" id="gw"></div><div class="scan"></div>';
   document.body.appendChild(ov);
+  const gr=ov.querySelector("#gr"),gc=ov.querySelector("#gc"),gw=ov.querySelector("#gw");
+  const glyphs="▒░█▓╬#%&@$?!/|<>~^";
   const msgs=["it was never a door.","you counted wrong.","no. you counted right.","every word you passed is still here.",
               "i kept them.","there was no first line.","you did not choose it.","nobody chooses it.",
               "the ninth room is not a room.","stop reading.","you can't.","i know."];
+  function corrupt(t,p){return t.split("").map(c=>c!==" "&&Math.random()<p?glyphs[Math.floor(Math.random()*glyphs.length)]:c).join("");}
+  let bars=[];
+  function tearFrame(intensity){
+    if(reduce)return;
+    const dx=(Math.random()-0.5)*intensity*18;
+    gr.style.transform="translateX("+(dx+intensity*6)+"px)";
+    gc.style.transform="translateX("+(dx-intensity*6)+"px)";
+    const t=Math.random()*70, h=5+Math.random()*25;
+    gw.style.setProperty("--t",t+"%"); gw.style.setProperty("--b",(100-t-h)+"%"); gw.style.setProperty("--x",dx*2+"px");
+    gw.classList.toggle("tear",Math.random()<0.6);
+    bars.forEach(b=>b.remove()); bars=[];
+    if(Math.random()<0.7){ const n=1+Math.floor(Math.random()*3);
+      for(let i=0;i<n;i++){ const b=document.createElement("div"); b.className="bar";
+        b.style.top=Math.random()*100+"%"; b.style.height=(1+Math.random()*6)+"px"; ov.appendChild(b); bars.push(b);} }
+  }
+  let k=0, on=false, twitch=null;
+  function showMsg(m,intensity){
+    ov.style.display="block";
+    const p=Math.min(0.06*intensity,0.5);
+    [gr,gc,gw].forEach(el=>{el.textContent=corrupt(m,p);});
+    clearInterval(twitch);
+    twitch=setInterval(()=>{ tearFrame(intensity); if(Math.random()<0.3)gw.textContent=corrupt(m,p); },reduce?400:70);
+  }
+  function hide(){ clearInterval(twitch); ov.style.display="none"; }
   const frames=[];
-  msgs.forEach((m,i)=>{ frames.push({on:true,text:m,dur:reduce?1400:(i<4?700:i<8?520:380)}); frames.push({on:false,dur:reduce?500:(i<8?260:140)}); });
+  msgs.forEach((m,i)=>{ const inten=1+i*0.5;
+    frames.push({on:true,text:m,inten,dur:reduce?1400:(i<4?760:i<8?540:360)});
+    frames.push({on:false,dur:reduce?500:(i<8?240:110)}); });
   document.title="";
-  let k=0;
   function next(){
-    if(k>=frames.length){ ov.style.display="none"; main.innerHTML=""; if(tick)tick.remove();
+    if(k>=frames.length){ hide(); main.innerHTML=""; if(tick)tick.remove();
       setTimeout(()=>{ document.title="error";
+        main.style.visibility="visible";
         main.innerHTML="<h1>The room closed the connection.</h1><p class='faint'>Something on this page stopped responding.</p><p style='margin-top:2em'><a href='waiting'>reload</a></p>";
       },2600); return; }
     const f=frames[k++];
-    if(f.on){ ov.textContent=f.text; ov.style.display="flex"; } else { ov.style.display="none"; }
+    if(f.on)showMsg(f.text,f.inten); else hide();
     setTimeout(next,f.dur);
   }
   main.style.visibility="hidden"; setTimeout(next,900);
